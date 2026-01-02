@@ -5,20 +5,103 @@
 <title>SocialBoost – SMM Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body, html {margin:0; padding:0; font-family: Arial; background:#0b0f1a; color:#fff;}
-header {background:#000; padding:15px; display:flex; justify-content:space-between; align-items:center;}
-header h1 {margin:0; font-size:20px;}
-.menu {font-size:28px; cursor:pointer;}
-nav {position:absolute; top:60px; right:0; background:#111; width:200px; display:none; flex-direction:column; padding:10px; border-radius:6px;}
-nav a {color:#00e0ff; text-decoration:none; padding:10px 5px;}
-nav a:hover {background:#222; border-radius:4px;}
-section {padding:20px; text-align:center;}
-.card {background:#12192c; padding:20px; border-radius:10px; margin:15px auto; max-width:420px; text-align:left;}
-input, select, button {width:100%; padding:12px; margin:8px 0; border:none; border-radius:6px;}
-button {background:#00e0ff; color:#000; font-weight:bold; cursor:pointer;}
-.hidden {display:none;}
-.footer-text {margin-top:20px; font-size:14px; color:#aaa; text-align:center;}
-#totalPrice {font-weight:bold; margin-top:10px;}
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #0b0f1a;
+  color: #fff;
+  min-height: 100vh;
+}
+
+header {
+  background: #000;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.menu {
+  font-size: 28px;
+  cursor: pointer;
+}
+
+nav {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  background: #111;
+  width: 200px;
+  display: none;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+nav a {
+  color: #00e0ff;
+  text-decoration: none;
+  padding: 10px 5px;
+}
+
+nav a:hover {
+  background: #222;
+  border-radius: 4px;
+}
+
+section {
+  padding: 20px;
+  text-align: center;
+}
+
+.card {
+  background: #12192c;
+  padding: 30px 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  margin: 20px auto;
+  text-align: center;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+button {
+  background: #00e0ff;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.footer-text {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #aaa;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+#totalPrice {
+  font-weight: bold;
+  margin-top: 10px;
+}
 </style>
 </head>
 <body>
@@ -35,21 +118,28 @@ button {background:#00e0ff; color:#000; font-weight:bold; cursor:pointer;}
 </header>
 
 <!-- LOGIN / SIGNUP -->
-<section id="loginBox" class="card" style="max-width:360px;margin-top:50px;">
-<h2>Welcome to SocialBoost</h2>
-<p>Get Instagram, TikTok, YouTube, Telegram & Facebook views, likes, followers, and more!</p>
+<section id="loginBox" class="card">
+  <h2>Welcome to SocialBoost</h2>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<button onclick="signup()">Signup</button>
-<hr>
-<button onclick="googleLogin()">Continue with Google</button>
+  <!-- About Us -->
+  <p>
+  SocialBoost is India’s leading SMM Panel, providing high-quality social media growth services.  
+  We help you increase your Instagram, TikTok, YouTube, Telegram, and Facebook presence with real likes, followers, views, and members.  
+  Our services are fast, reliable, and delivered within 1–1.5 hours after payment.  
+  Whether you’re a content creator, influencer, or business, SocialBoost gives you the tools to grow your audience and engagement safely.
+  </p>
 
-<div class="footer-text">
-SocialBoost provides high-quality social media services.<br>
-Orders delivered within 1–1.3 hours after payment.
-</div>
+  <input id="email" placeholder="Email" type="email">
+  <input id="password" placeholder="Password" type="password">
+
+  <button onclick="login()">Login</button>
+  <button onclick="signup()">Signup</button>
+  <hr>
+  <button onclick="googleLogin()">Continue with Google</button>
+
+  <div class="footer-text">
+    Already a customer? Login above. New here? Signup to start placing orders instantly.
+  </div>
 </section>
 
 <!-- DASHBOARD / ORDER -->
@@ -58,7 +148,6 @@ Orders delivered within 1–1.3 hours after payment.
 <div class="card">
 <h3>Place an Order</h3>
 
-<!-- Platform selection -->
 <select id="platform" onchange="updateServices()">
 <option value="">Select Platform</option>
 <option value="instagram">Instagram</option>
@@ -68,7 +157,6 @@ Orders delivered within 1–1.3 hours after payment.
 <option value="facebook">Facebook</option>
 </select>
 
-<!-- Service selection (populated dynamically) -->
 <select id="service">
 <option value="">Select Service</option>
 </select>
@@ -76,7 +164,6 @@ Orders delivered within 1–1.3 hours after payment.
 <input id="qty" type="number" placeholder="Quantity" min="1" oninput="calculateTotal()">
 <p id="totalPrice">Total: 0 Rs</p>
 
-<!-- Payment selection -->
 <select id="paymentSelect" onchange="showPayment(this.value)">
   <option value="">Select Payment</option>
   <option value="gpay">GPay</option>
@@ -86,35 +173,34 @@ Orders delivered within 1–1.3 hours after payment.
   <option value="paypal">PayPal</option>
 </select>
 
-<!-- Payment Containers -->
 <div id="gpay" class="hidden">
-  <p>Pay via GPay</p>
-  <p>UPI ID: <b>yourgpay@upi</b></p>
-  <img src="gpay-qr.png" width="200">
+<p>Pay via GPay</p>
+<p>UPI ID: <b>yourgpay@upi</b></p>
+<img src="gpay-qr.png" width="200">
 </div>
 
 <div id="phonepe" class="hidden">
-  <p>Pay via PhonePe</p>
-  <p>UPI ID: <b>yourphonepe@upi</b></p>
-  <img src="phonepe-qr.png" width="200">
+<p>Pay via PhonePe</p>
+<p>UPI ID: <b>yourphonepe@upi</b></p>
+<img src="phonepe-qr.png" width="200">
 </div>
 
 <div id="paytm" class="hidden">
-  <p>Pay via Paytm</p>
-  <p>UPI ID: <b>yourpaytm@upi</b></p>
-  <img src="paytm-qr.png" width="200">
+<p>Pay via Paytm</p>
+<p>UPI ID: <b>yourpaytm@upi</b></p>
+<img src="paytm-qr.png" width="200">
 </div>
 
 <div id="razorpay" class="hidden">
-  <p>Pay via Razorpay</p>
-  <img src="razorpay-qr.png" width="200">
+<p>Pay via Razorpay</p>
+<img src="razorpay-qr.png" width="200">
 </div>
 
 <div id="paypal" class="hidden">
-  <p>Pay via PayPal</p>
-  <a href="https://www.paypal.com/paypalme/YOUR_LINK" target="_blank">
-    <button>Pay with PayPal</button>
-  </a>
+<p>Pay via PayPal</p>
+<a href="https://www.paypal.com/paypalme/YOUR_LINK" target="_blank">
+  <button>Pay with PayPal</button>
+</a>
 </div>
 
 <button onclick="placeOrder()">Confirm Order</button>

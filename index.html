@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SocialBoost – SMM Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body, html {margin:0; padding:0; font-family: Arial; background:#0b0f1a; color:#fff;}
+header {background:#000; padding:15px; display:flex; justify-content:space-between; align-items:center;}
+header h1 {margin:0; font-size:20px;}
+.menu {font-size:28px; cursor:pointer;}
+nav {position:absolute; top:60px; right:0; background:#111; width:200px; display:none; flex-direction:column; padding:10px; border-radius:6px;}
+nav a {color:#00e0ff; text-decoration:none; padding:10px 5px;}
+nav a:hover {background:#222; border-radius:4px;}
+section {padding:20px; text-align:center;}
+.card {background:#12192c; padding:20px; border-radius:10px; margin:15px auto; max-width:420px; text-align:left;}
+input, select, button {width:100%; padding:12px; margin:8px 0; border:none; border-radius:6px;}
+button {background:#00e0ff; color:#000; font-weight:bold; cursor:pointer;}
+.hidden {display:none;}
+.footer-text {margin-top:20px; font-size:14px; color:#aaa; text-align:center;}
+#totalPrice {font-weight:bold; margin-top:10px;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🚀 SocialBoost</h1>
+<span class="menu" onclick="toggleMenu()">☰</span>
+<nav id="navMenu">
+  <a href="#" onclick="showDashboard()">Dashboard</a>
+  <a href="#" onclick="showOrders()">Orders</a>
+  <a href="#" onclick="showProfile()">Profile</a>
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+</header>
+
+<!-- LOGIN / SIGNUP -->
+<section id="loginBox" class="card" style="max-width:360px;margin-top:50px;">
+<h2>Welcome to SocialBoost</h2>
+<p>Get Instagram, TikTok, YouTube, Telegram & Facebook views, likes, followers, and more!</p>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="signup()">Signup</button>
+<hr>
+<button onclick="googleLogin()">Continue with Google</button>
+
+<div class="footer-text">
+SocialBoost provides high-quality social media services.<br>
+Orders delivered within 1–1.3 hours after payment.
+</div>
+</section>
+
+<!-- DASHBOARD / ORDER -->
+<section id="dashboardSection" class="hidden">
+<h2>Dashboard</h2>
+<div class="card">
+<h3>Place an Order</h3>
+
+<!-- Platform selection -->
+<select id="platform" onchange="updateServices()">
+<option value="">Select Platform</option>
+<option value="instagram">Instagram</option>
+<option value="tiktok">TikTok</option>
+<option value="youtube">YouTube</option>
+<option value="telegram">Telegram</option>
+<option value="facebook">Facebook</option>
+</select>
+
+<!-- Service selection (populated dynamically) -->
+<select id="service">
+<option value="">Select Service</option>
+</select>
+
+<input id="qty" type="number" placeholder="Quantity" min="1" oninput="calculateTotal()">
+<p id="totalPrice">Total: 0 Rs</p>
+
+<!-- Payment selection -->
+<select id="paymentSelect" onchange="showPayment(this.value)">
+  <option value="">Select Payment</option>
+  <option value="gpay">GPay</option>
+  <option value="phonepe">PhonePe</option>
+  <option value="paytm">Paytm</option>
+  <option value="razorpay">Razorpay</option>
+  <option value="paypal">PayPal</option>
+</select>
+
+<!-- Payment Containers -->
+<div id="gpay" class="hidden">
+  <p>Pay via GPay</p>
+  <p>UPI ID: <b>yourgpay@upi</b></p>
+  <img src="gpay-qr.png" width="200">
+</div>
+
+<div id="phonepe" class="hidden">
+  <p>Pay via PhonePe</p>
+  <p>UPI ID: <b>yourphonepe@upi</b></p>
+  <img src="phonepe-qr.png" width="200">
+</div>
+
+<div id="paytm" class="hidden">
+  <p>Pay via Paytm</p>
+  <p>UPI ID: <b>yourpaytm@upi</b></p>
+  <img src="paytm-qr.png" width="200">
+</div>
+
+<div id="razorpay" class="hidden">
+  <p>Pay via Razorpay</p>
+  <img src="razorpay-qr.png" width="200">
+</div>
+
+<div id="paypal" class="hidden">
+  <p>Pay via PayPal</p>
+  <a href="https://www.paypal.com/paypalme/YOUR_LINK" target="_blank">
+    <button>Pay with PayPal</button>
+  </a>
+</div>
+
+<button onclick="placeOrder()">Confirm Order</button>
+</div>
+</section>
+
+<!-- ORDERS -->
+<section id="ordersSection" class="hidden">
+<h2>Your Orders</h2>
+<div id="ordersList" class="card"></div>
+</section>
+
+<!-- PROFILE -->
+<section id="profileSection" class="hidden">
+<h2>Profile</h2>
+<div class="card">
+<p><b>Email:</b> <span id="userEmail"></span></p>
+<p><b>UID:</b> <span id="userUID"></span></p>
+</div>
+</section>
+
+<footer class="footer-text">
+© 2026 SocialBoost • All Rights Reserved
+</footer>
+
+<script type="module" src="firebase.js"></script>
+<script>
+/* Hamburger Menu */
+function toggleMenu(){
+  const menu = document.getElementById("navMenu");
+  menu.style.display = menu.style.display==="flex"?"none":"flex";
+}
+
+/* Show Sections */
+function hideAll(){
+  document.getElementById("dashboardSection").classList.add("hidden");
+  document.getElementById("ordersSection").classList.add("hidden");
+  document.getElementById("profileSection").classList.add("hidden");
+}
+
+function showDashboard(){hideAll(); document.getElementById("dashboardSection").classList.remove("hidden");}
+function showOrders(){hideAll(); document.getElementById("ordersSection").classList.remove("hidden"); loadOrders();}
+function showProfile(){hideAll(); document.getElementById("profileSection").classList.remove("hidden"); displayProfile();}
+
+/* Services per platform */
+const serviceOptions = {
+  instagram: ["Followers", "Likes", "Views"],
+  tiktok: ["Followers", "Likes", "Views"],
+  youtube: ["Subscribers", "Likes", "Views"],
+  telegram: ["Subscribers", "Views", "Members"],
+  facebook: ["Followers", "Likes", "Views"]
+};
+
+/* Example prices (used for total calc) */
+const servicePrices = {
+  instagram: {Followers:50, Likes:40, Views:30},
+  tiktok: {Followers:50, Likes:40, Views:30},
+  youtube: {Subscribers:100, Likes:50, Views:40},
+  telegram: {Subscribers:50, Views:30, Members:70},
+  facebook: {Followers:50, Likes:40, Views:30}
+};
+
+function updateServices(){
+  const platform = document.getElementById("platform").value;
+  const serviceSelect = document.getElementById("service");
+  serviceSelect.innerHTML = "<option value=''>Select Service</option>";
+  if(platform && serviceOptions[platform]){
+    serviceOptions[platform].forEach(s=>{
+      const option = document.createElement("option");
+      option.value = s;
+      option.textContent = s;
+      serviceSelect.appendChild(option);
+    });
+  }
+  calculateTotal();
+}
+
+function calculateTotal(){
+  const platform = document.getElementById("platform").value;
+  const service = document.getElementById("service").value;
+  const qty = parseInt(document.getElementById("qty").value) || 0;
+  let total = 0;
+  if(platform && service && servicePrices[platform][service]){
+    total = servicePrices[platform][service] * qty;
+  }
+  document.getElementById("totalPrice").textContent = "Total: "+total+" Rs";
+}
+
+/* Payment UI */
+function showPayment(value){
+  const payments = ["gpay","phonepe","paytm","razorpay","paypal"];
+  payments.forEach(p => document.getElementById(p).classList.add("hidden"));
+  if(value && payments.includes(value)){
+    document.getElementById(value).classList.remove("hidden");
+  }
+}
+</script>
+
+</body>
+</html>

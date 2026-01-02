@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SocialBoost – SMM Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body, html {margin:0; padding:0; font-family: Arial; background:#0b0f1a; color:#fff;}
+header {background:#000; padding:15px; display:flex; justify-content:space-between; align-items:center;}
+header h1 {margin:0; font-size:20px;}
+.menu {font-size:28px; cursor:pointer;}
+nav {position:absolute; top:60px; right:0; background:#111; width:200px; display:none; flex-direction:column; padding:10px; border-radius:6px;}
+nav a {color:#00e0ff; text-decoration:none; padding:10px 5px;}
+nav a:hover {background:#222; border-radius:4px;}
+section {padding:20px; text-align:center;}
+.card {background:#12192c; padding:20px; border-radius:10px; margin:15px auto; max-width:420px; text-align:left;}
+input, select, button {width:100%; padding:12px; margin:8px 0; border:none; border-radius:6px;}
+button {background:#00e0ff; color:#000; font-weight:bold; cursor:pointer;}
+.hidden {display:none;}
+.service-price {background:#222; padding:10px; margin:8px 0; border-radius:6px;}
+footer {background:#000; padding:20px; text-align:center; margin-top:20px;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🚀 SocialBoost</h1>
+<span class="menu" onclick="toggleMenu()">☰</span>
+<nav id="navMenu">
+  <a href="#" onclick="showDashboard()">Dashboard</a>
+  <a href="#" onclick="showOrders()">Orders</a>
+  <a href="#" onclick="showProfile()">Profile</a>
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+</header>
+
+<!-- LOGIN / SIGNUP -->
+<section id="loginBox" class="card">
+<h2>Login / Signup</h2>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="signup()">Signup</button>
+<hr>
+<button onclick="googleLogin()">Continue with Google</button>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboardSection" class="hidden">
+<h2>Dashboard</h2>
+
+<div class="card">
+<h3>Available Services</h3>
+
+<!-- Instagram -->
+<div class="service-price">Instagram Followers - 50Rs / 1000</div>
+<div class="service-price">Instagram Likes - 40Rs / 1000</div>
+<div class="service-price">Instagram Views - 30Rs / 1000</div>
+
+<!-- TikTok -->
+<div class="service-price">TikTok Followers - 50Rs / 1000</div>
+<div class="service-price">TikTok Likes - 40Rs / 1000</div>
+<div class="service-price">TikTok Views - 30Rs / 1000</div>
+
+<!-- YouTube -->
+<div class="service-price">YouTube Subscribers - 100Rs / 1000</div>
+<div class="service-price">YouTube Likes - 50Rs / 1000</div>
+<div class="service-price">YouTube Views - 40Rs / 1000</div>
+
+<!-- Telegram -->
+<div class="service-price">Telegram Subscribers - 50Rs / 1000</div>
+<div class="service-price">Telegram Views - 30Rs / 1000</div>
+<div class="service-price">Telegram Members - 70Rs / 1000</div>
+
+<!-- Facebook -->
+<div class="service-price">Facebook Followers - 50Rs / 1000</div>
+<div class="service-price">Facebook Likes - 40Rs / 1000</div>
+<div class="service-price">Facebook Views - 30Rs / 1000</div>
+</div>
+
+<!-- Place Order -->
+<div class="card">
+<h3>Place Order</h3>
+<select id="service">
+  <!-- Instagram -->
+  <option>Instagram Followers</option>
+  <option>Instagram Likes</option>
+  <option>Instagram Views</option>
+
+  <!-- TikTok -->
+  <option>TikTok Followers</option>
+  <option>TikTok Likes</option>
+  <option>TikTok Views</option>
+
+  <!-- YouTube -->
+  <option>YouTube Subscribers</option>
+  <option>YouTube Likes</option>
+  <option>YouTube Views</option>
+
+  <!-- Telegram -->
+  <option>Telegram Subscribers</option>
+  <option>Telegram Views</option>
+  <option>Telegram Members</option>
+
+  <!-- Facebook -->
+  <option>Facebook Followers</option>
+  <option>Facebook Likes</option>
+  <option>Facebook Views</option>
+</select>
+
+<input id="link" placeholder="Profile / Post Link">
+<input id="qty" placeholder="Quantity">
+<select id="paymentSelect" onchange="showPayment(this.value)">
+<option value="">Select Payment</option>
+<option value="upi">UPI</option>
+<option value="qr">QR</option>
+</select>
+
+<div id="upi" class="hidden">
+<p>Pay via UPI: <b>yourupi@upi</b></p>
+</div>
+<div id="qr" class="hidden">
+<p>Scan QR</p>
+<img src="qr.png" width="200">
+</div>
+
+<button onclick="placeOrder()">Confirm Order</button>
+</div>
+</section>
+
+<!-- ORDERS -->
+<section id="ordersSection" class="hidden">
+<h2>Your Orders</h2>
+<div id="ordersList" class="card"></div>
+</section>
+
+<!-- PROFILE -->
+<section id="profileSection" class="hidden">
+<h2>Profile</h2>
+<div class="card">
+<p><b>Email:</b> <span id="userEmail"></span></p>
+<p><b>UID:</b> <span id="userUID"></span></p>
+</div>
+</section>
+
+<footer>
+© 2026 SocialBoost • All Rights Reserved
+</footer>
+
+<script type="module" src="firebase.js"></script>
+<script>
+/* HAMBURGER MENU */
+function toggleMenu(){
+  const menu = document.getElementById("navMenu");
+  menu.style.display = menu.style.display==="flex"?"none":"flex";
+}
+
+/* SHOW SECTIONS */
+function showDashboard(){hideAll(); document.getElementById("dashboardSection").classList.remove("hidden")}
+function showOrders(){hideAll(); document.getElementById("ordersSection").classList.remove("hidden"); loadOrders();}
+function showProfile(){hideAll(); document.getElementById("profileSection").classList.remove("hidden"); displayProfile();}
+function hideAll(){
+  document.getElementById("dashboardSection").classList.add("hidden");
+  document.getElementById("ordersSection").classList.add("hidden");
+  document.getElementById("profileSection").classList.add("hidden");
+}
+
+/* PAYMENT UI */
+const upi = document.getElementById("upi");
+const qr = document.getElementById("qr");
+</script>
+
+</body>
+</html>
